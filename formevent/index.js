@@ -1,55 +1,56 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const inputMaxLengthOnLoad = document.getElementById('inputNama').maxLength;
-    document.getElementById('sisaKarakter').innerText = inputMaxLengthOnLoad;
+    const inputNama = document.getElementById('inputNama');
+    const sisaKarakter = document.getElementById('sisaKarakter');
+    const notifikasiSisaKarakter = document.getElementById('notifikasiSisaKarakter');
+    const inputCaptcha = document.getElementById('inputCaptcha');
+    const submitButton = document.getElementById('submitButton');
 
-    // ! on-input
-    document.getElementById('inputNama').addEventListener('input', function() {
-        const jumlahKarakterDiInput = document.getElementById('inputNama').value.length;
-        const jumnlahKarakterMaksimal = document.getElementById('inputNama').maxLength;
-        const sisaKarakterUpdate = jumnlahKarakterMaksimal - jumlahKarakterDiInput;
-        document.getElementById('sisaKarakter').innerText = sisaKarakterUpdate.toString();
-        if (sisaKarakterUpdate === 0) {
-            document.getElementById('sisaKarakter').innerText = 'Batas maksimal tercapai!';
-        } else if (sisaKarakterUpdate <= 5) {
-            document.getElementById('notifikasiSisaKarakter').style.color = 'red';
+    sisaKarakter.innerText = inputNama.maxLength;
+
+    inputNama.addEventListener('input', function() {
+        const jumlahKarakter = inputNama.value.length;
+        const sisa = inputNama.maxLength - jumlahKarakter;
+        if (sisa === 0) {
+            sisaKarakter.innerText = 'Batas maksimal tercapai!';
         } else {
-            document.getElementById('notifikasiSisaKarakter').style.color = 'black';
+            sisaKarakter.innerText = sisa;
+        }
+        notifikasiSisaKarakter.style.color = sisa <= 5 ? 'red' : 'black';
+    });
+
+    inputNama.addEventListener('focus', () => {
+        notifikasiSisaKarakter.style.visibility = 'visible';
+    });
+
+    inputNama.addEventListener('blur', () => {
+        notifikasiSisaKarakter.style.visibility = 'hidden';
+    });
+
+    inputCaptcha.addEventListener('change', () => {
+        if (inputCaptcha.value === 'PRNU') {
+            submitButton.removeAttribute('disabled');
+        } else {
+            submitButton.setAttribute('disabled', '');
         }
     });
 
-    // ! on focus
-    document.getElementById('inputNama').addEventListener('focus', function() {
-        document.getElementById('notifikasiSisaKarakter').style.visibility = 'visible';
-    })
-
-    // ! on blur
-    document.getElementById('inputNama').addEventListener('blur', function() {
-        document.getElementById('notifikasiSisaKarakter').style.visibility = 'hidden';
-    });
-
-    // ! on change 
-    document.getElementById('inputCaptcha').addEventListener('change', function() {
-        const inputCaptcha = document.getElementById('inputCaptcha').value;
-        const submitButtonStatus = document.getElementById('submitButton');
-        if (inputCaptcha === 'PRNU') {
-            submitButtonStatus.removeAttribute('disabled');
-        } else {
-            submitButtonStatus.setAttribute('disabled', '');
-        }
-    });
-
-    // ! on submit 
     document.getElementById('formDataDiri').addEventListener('submit', function(event) {
-        const inputCaptcha = document.getElementById('inputCaptcha').value;
-        if (inputCaptcha === 'PRNU') {
-            alert('Selamat! Captcha Anda lolos :D');
-        } else {
-            console.log('Captcha Anda belum tepat :(');
-            alert('Captcha Anda belum tepat :(');
-            document.getElementById('submitButton').setAttribute('disabled', '');
-        }
-        console.log('Form telah disubmit');
         event.preventDefault();
+        const inputVal = inputCaptcha.value.trim();
+        if (inputVal === 'PRNU') {
+            alert('Selamat! Captcha Anda lolos :D');
+            console.log('Form telah disubmit');
+        } else {
+            alert('Captcha Anda belum tepat :(');
+            submitButton.setAttribute('disabled', '');
+        }
     });
 
+    document.getElementById('inputCopy').addEventListener('copy', () => {
+        alert('Anda telah men-copy sesuatu...');
+    });
+
+    document.getElementById('inputPaste').addEventListener('paste', () => {
+        alert('Anda telah mem-paste sebuah teks...');
+    });
 });
