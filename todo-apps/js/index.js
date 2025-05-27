@@ -13,7 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(todos);
         const uncompletedTODOList = document.getElementById('todos');
         const completedTODOList = document.getElementById('completed-todos');
+
         uncompletedTODOList.innerHTML = '';
+        completedTODOList.innerHTML = '';
+
         console.log(uncompletedTODOList);
 
         for (const todoItem of todos) {
@@ -72,12 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const trashButton = document.createElement('button');
             undoButton.classList.add('undo-button');
             trashButton.classList.add('trash-button');
+
             undoButton.addEventListener('click', function() {
                 undoTaskFromCompleted(todoObject.id);
             });
+
             trashButton.addEventListener('click', function() {
                 removeTaskFromCompleted(todoObject.id);
             });
+
             container.append(undoButton, trashButton);
         } else {
             const checkButton = document.createElement('button');
@@ -108,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function findTodoIndex(todoID) {
         for (const index in todos) {
-            if (todos[index].id === todoId) {
+            if (todos[index].id === todoID) {
                 return index;
             }
         }
