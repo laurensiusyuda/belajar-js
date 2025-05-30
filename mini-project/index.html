@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Keuangan Harian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><i class="fas fa-wallet " style="color: white;"></i>Catatan Keuangan Harian</h1>
+                </div>
+                <nav>
+                    <a href="#" class="active"><i class="fas fa-home"></i> Beranda</a>
+                    <a href="#"><i class="fas fa-chart-bar"></i> Laporan</a>
+                    <a href="#"><i class="fas fa-cog"></i> Pengaturan</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Summary section -->
+            <section class="summary-section">
+                <div class="summary-card income-card">
+                    <h2><i class="fas fa-arrow-up"></i> Total Pemasukan</h2>
+                    <p id="totalPemasukan">Rp 0</p>
+                </div>
+
+                <div class="summary-card expense-card">
+                    <h2><i class="fas fa-arrow-down"></i> Total Pengeluaran</h2>
+                    <p id="totalPengeluaran">Rp 0</p>
+                </div>
+
+                <div class="summary-card balance-card">
+                    <h2><i class="fas fa-balance-scale"></i> Saldo Saat Ini</h2>
+                    <p id="saldoSaatIni">Rp 0</p>
+                </div>
+            </section>
+
+            <!-- Transaction form section -->
+            <section class="transaction-form-section">
+                <h2><i class="fas fa-plus-circle"></i> Tambah Transaksi Baru</h2>
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Transaksi berhasil ditambahkan!
+                </div>
+                <form id="transactionForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="jenisTransaksi"><i class="fas fa-tags"></i> Jenis Transaksi:</label>
+                            <select id="jenisTransaksi" required>
+                                <option value="pemasukan">💰 Pemasukan</option>
+                                <option value="pengeluaran">💸 Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jumlah"><i class="fas fa-money-bills"></i> Jumlah (Rp):</label>
+                            <input type="number" id="jumlah" placeholder="Masukkan jumlah">
+                        </div>
+                        <div class="form-group">
+                            <label for="deskripsi"><i class="fas fa-file-alt"></i> Deskripsi:</label>
+                            <input type="text" id="deskripsi" placeholder="Misal: Gaji, Belanja Makanan" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal"><i class="fas fa-calendar"></i> Tanggal:</label>
+                            <input type="date" id="tanggal" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-plus-circle"></i> Tambah Transaksi
+                    </button>
+                </form>
+            </section>
+
+            <!-- Transaction list -->
+            <section class="transaction-list-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Riwayat Transaksi</h2>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="loadSampleData(); updateSummary(); displayTransactions();">
+                            <i class="fas fa-database"></i> Data Sample
+                        </button>
+                        <button class="btn btn-success" id="exportBtn" onclick="exportToCSV()">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                        <button class="btn btn-warning" onclick="printTransactions()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAllTransactions()">
+                            <i class="fas fa-trash"></i> Hapus Semua
+                        </button>
+                    </div>
+                </div>
+
+                <div class="controls-row">
+                    <div class="search-group">
+                        <label for="searchInput"><i class="fas fa-search"></i> Cari Transaksi:</label>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Cari berdasarkan deskripsi, jenis, atau jumlah..." oninput="searchTransactions(this.value)">
+                    </div>
+                    <div class="filter-group">
+                        <div class="form-group">
+                            <label for="filterBulan"><i class="fas fa-calendar-alt"></i> Bulan:</label>
+                            <input type="month" id="filterBulan">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterJenis"><i class="fas fa-filter"></i> Jenis:</label>
+                            <select id="filterJenis">
+                                <option value="all">Semua</option>
+                                <option value="pemasukan">Pemasukan</option>
+                                <option value="pengeluaran">Pengeluaran</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="filteredSummary" class="filtered-summary" style="display: none;"></div>
+
+                <div class="table-container">
+                    <table id="transactionTable">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-calendar"></i> Tanggal</th>
+                                <th><i class="fas fa-tag"></i> Jenis</th>
+                                <th><i class="fas fa-file-alt"></i> Deskripsi</th>
+                                <th><i class="fas fa-money-bill"></i> Jumlah</th>
+                                <th><i class="fas fa-cogs"></i> Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noTransactionsMessage" class="no-transactions" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <h3>Belum ada transaksi</h3>
+                    <p>Mulai tambahkan transaksi pertama Anda!</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Catatan Keuangan Harian. Dibuat dengan <i class="fas fa-heart"></i> untuk mengelola keuangan Anda</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+
+</html>
