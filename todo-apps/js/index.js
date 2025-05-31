@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const submitButton = document.getElementById('form');
+    const todos = JSON.parse(localStorage.getItem('todos')) || [];
 
-    const todos = [];
+    const submitButton = document.getElementById('form');
     const RENDER_EVENT = 'render-todo';
 
     submitButton.addEventListener('submit', function(event) {
@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.addEventListener(RENDER_EVENT, function() {
-        console.log(todos);
         const uncompletedTODOList = document.getElementById('todos');
         const completedTODOList = document.getElementById('completed-todos');
 
@@ -29,15 +28,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    document.dispatchEvent(new Event(RENDER_EVENT));
+
+
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
     function generatedId() {
         return +new Date();
     }
 
-    function generatedTodoObject(id, task, timestamp, isCompleted) {
+    function generatedTodoObject(id, task, timestamp, timeschedule, isCompleted) {
         return {
             id,
             task,
             timestamp,
+            timeschedule,
             isCompleted
         };
     }
@@ -45,11 +52,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function addTodo() {
         const textTodo = document.getElementById('title').value;
         const timestamp = document.getElementById('date').value;
+        const timeschedule = document.getElementById('time').value;
 
         const generatedID = generatedId();
-        const todoObject = generatedTodoObject(generatedID, textTodo, timestamp, false);
+        const todoObject = generatedTodoObject(generatedID, textTodo, timestamp, timeschedule, false);
 
         todos.push(todoObject);
+        saveTodos();
         document.dispatchEvent(new Event(RENDER_EVENT));
 
     }
@@ -57,17 +66,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function makeTodo(todoObject) {
         const textTitle = document.createElement('h2');
         const textTimestamp = document.createElement('p');
+        const textTimestampSchedule = document.createElement('p');
+
         const textContainer = document.createElement('div');
         const container = document.createElement('div');
 
         textTitle.innerText = todoObject.task;
         textTimestamp.innerText = todoObject.timestamp;
+        textTimestampSchedule.innerText = todoObject.timeschedule;
 
         textContainer.classList.add('inner');
-        textContainer.append(textTitle, textTimestamp);
+        textContainer.append(textTitle, textTimestamp, textTimestampSchedule);
 
         container.classList.add('item', 'shadow');
         container.append(textContainer);
+
         container.setAttribute('id', `todo-${todoObject.id}`);
 
         if (todoObject.isCompleted) {
@@ -118,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return index;
             }
         }
-
         return -1;
     }
 
